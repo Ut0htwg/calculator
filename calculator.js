@@ -13,10 +13,10 @@ let inputOps = '';
 let lastCharOperator = false;
 const addEventTextToDisplayInput = (event) => {
     displayInput.innerHTML += event.target.textContent;
-    if (event.target.textContent === '+' ||                         //  43 - plus
-        event.target.textContent === '-' ||                         //  45 - minus
-        event.target.textContent === String.fromCharCode(215) ||    // 215 - multiply
-        event.target.textContent === String.fromCharCode(247)) {    // 247 - divide
+    if (event.target.textContent === '+' ||         //  43 - plus
+        event.target.textContent === '-' ||         //  45 - minus
+        event.target.textContent === '×' ||         // 215 - multiply
+        event.target.textContent === '÷' ) {        // 247 - divide
         if (lastCharOperator) {
             inputError();
             return;
@@ -68,27 +68,17 @@ const inputError = () => {
     lastCharOperator = false;
 }
 
+const operators = {                  // for evaluateResult
+    '+': function (a, b) {return a + parseFloat(b)},
+    '-': function (a, b) {return a - parseFloat(b)},
+    '×': function (a, b) {return a * parseFloat(b)},
+    '÷': function (a, b) {return a / parseFloat(b)}
+}
+
 const evaluateResult = (inputArray, inputOpsArray, inputResult) => {
     inputResult = parseFloat(inputArray [0]);
     for (let i=0; i<inputOpsArray.length; i+=1) {
-        switch (inputOpsArray[i]) {
-        case '+':
-            inputResult += parseFloat(inputArray[i+1]);
-            break;
-        case '-':
-            inputResult -= parseFloat(inputArray[i+1]);
-            break;
-        case String.fromCharCode(215):
-            inputResult *= parseFloat(inputArray[i+1]);
-            break;
-        case String.fromCharCode(247):
-            inputResult /= parseFloat(inputArray[i+1]);
-            break;
-        default:
-            inputResult = 'error';
-            inputError();
-            return;
-        }
+        inputResult = operators[inputOpsArray[i]] (inputResult, inputArray[i+1] );
     }
     return inputResult;
 }
